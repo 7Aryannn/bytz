@@ -273,7 +273,7 @@ export default function Vault() {
             {
                 confirmDelete.isOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-[6px] transition-all duration-300">
-                        <div className="bg-[#EAE0C8] border border-stone-300 rounded-2xl p-6 md:p-8 w-full max-w-md shadow-2xl relative text-center animate-in fade-in zoom-in duration-300">
+                        <div className="bg-[#EAE0C8] border border-stone-300 rounded-2xl p-5 md:p-8 w-full max-w-md shadow-2xl relative text-center animate-in fade-in zoom-in duration-300 max-h-full overflow-y-auto flex flex-col no-scrollbar outline-none">
                             <div className="mb-6 flex flex-col items-center">
                                 <div className="w-16 h-16 rounded-full bg-red-100/50 border border-red-200 flex items-center justify-center mb-4">
                                     <svg className="w-8 h-8 text-red-600 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
