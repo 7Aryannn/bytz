@@ -9,12 +9,12 @@ export default function Home() {
   const [generatedLink, setGeneratedLink] = useState(null);
   const [isCopiedGen, setIsCopiedGen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [countdown, setCountdown] = useState(7);
+  const [countdown, setCountdown] = useState(10);
 
   useEffect(() => {
     let interval;
     if (generatedLink) {
-      setCountdown(7);
+      setCountdown(10);
       interval = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -170,55 +170,57 @@ export default function Home() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-[6px] transition-all duration-300"
           onClick={(e) => { if (e.target === e.currentTarget) setGeneratedLink(null); }}
         >
-          <div className="bg-[#EAE0C8] border border-stone-300 rounded-2xl p-6 md:p-8 w-full max-w-lg shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] relative text-center animate-in fade-in zoom-in duration-300">
-            <div className="mb-6">
-              <h2 className="text-2xl font-extrabold text-stone-900 mb-2">Your BYTZ Link is Ready</h2>
-              <p className="text-sm text-stone-500">Your shortened URL has been successfully forged.</p>
-            </div>
+          <div className="relative w-full max-w-lg p-1 rounded-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+            {/* Animated Border Tracker Background */}
+            <div className="absolute inset-0 z-0 bg-[conic-gradient(from_var(--border-angle),#F59E0B_0%,#F59E0B_5%,transparent_5%,transparent_100%)] animate-border-spin rounded-2xl"></div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#FBF6EC] p-3 rounded-xl border border-stone-300 shadow-inner mb-8">
-              <p className="text-xl font-bold text-[#2D4F1E] truncate px-3">{generatedLink}</p>
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <button
-                  onClick={() => copyToClipboard(generatedLink)}
-                  className={`flex-1 sm:flex-none px-5 py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-all duration-300 shadow-sm text-sm ${isCopiedGen ? 'bg-[#2D4F1E] text-[#F5E6CC] border-transparent' : 'bg-[#EAE0C8] text-stone-800 border border-stone-300 hover:border-[#2D4F1E] hover:text-[#2D4F1E]'}`}
-                >
-                  {isCopiedGen ? (
-                    <>
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                      Copy
-                    </>
-                  )}
-                </button>
-                <a
-                  href={`https://${generatedLink}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 sm:flex-none px-5 py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-all duration-300 shadow-sm text-sm bg-[#EAE0C8] text-stone-800 border border-stone-300 hover:border-[#2D4F1E] hover:text-[#2D4F1E]"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                  Open
-                </a>
+            {/* Modal Content Foreground */}
+            <div className="bg-[#EAE0C8] border-stone-300 rounded-xl p-6 md:p-8 w-full shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] relative z-10 text-center">
+              <div className="mb-6">
+                <h2 className="text-2xl font-extrabold text-stone-900 mb-2">Your BYTZ Link is Ready</h2>
+                <p className="text-sm text-stone-500">Your shortened URL has been successfully forged.</p>
               </div>
-            </div>
 
-            <div className="flex items-center justify-between mt-2 pt-4 border-t border-stone-300/50">
-              <p className="text-sm text-stone-500 font-medium">Closing in {countdown}s...</p>
-              <button
-                onClick={() => setGeneratedLink(null)}
-                className="text-sm text-stone-500 hover:text-stone-800 font-bold transition-colors"
-              >
-                Close
-              </button>
-            </div>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#FBF6EC] p-3 rounded-xl shadow-inner mb-8">
+                <p className="text-xl font-bold text-[#2D4F1E] truncate px-3">{generatedLink}</p>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={() => copyToClipboard(generatedLink)}
+                    className={`flex-1 sm:flex-none px-5 py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-all duration-300 shadow-sm text-sm ${isCopiedGen ? 'bg-[#2D4F1E] text-[#F5E6CC] border-transparent' : 'bg-[#EAE0C8] text-stone-800 border-2 border-transparent hover:border-[#2D4F1E] hover:text-[#2D4F1E]'}`}
+                  >
+                    {isCopiedGen ? (
+                      <>
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                        Copy
+                      </>
+                    )}
+                  </button>
+                  <a
+                    href={`https://${generatedLink}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 sm:flex-none px-5 py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-all duration-300 shadow-sm text-sm bg-[#EAE0C8] text-stone-800 border-2 border-transparent hover:border-[#2D4F1E] hover:text-[#2D4F1E]"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    Open
+                  </a>
+                </div>
+              </div>
 
-            <div className="absolute top-0 left-0 w-full h-1 bg-stone-300 rounded-t-2xl overflow-hidden">
-              <div className="h-full bg-amber-500 animate-[shrink_7s_linear_forwards]"></div>
+              <div className="flex items-center justify-between mt-2 pt-4 border-t border-stone-300/50">
+                <p className="text-sm text-stone-500 font-medium">Closing in {countdown}s...</p>
+                <button
+                  onClick={() => setGeneratedLink(null)}
+                  className="text-sm text-stone-500 hover:text-stone-800 font-bold transition-colors"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>

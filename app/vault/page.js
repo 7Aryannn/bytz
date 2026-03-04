@@ -232,13 +232,13 @@ export default function Vault() {
                         </div>
                         <button
                             onClick={executeUndo}
-                            className="text-amber-400 hover:text-amber-300 font-bold uppercase tracking-wider text-xs px-3 py-1.5 rounded bg-amber-400/10 hover:bg-amber-400/20 transition-colors"
+                            className="text-orange-500 hover:text-orange-400 font-bold uppercase tracking-wider text-xs px-3 py-1.5 rounded bg-orange-500/10 hover:bg-orange-500/20 transition-colors"
                         >
                             Undo
                         </button>
                     </div>
                     <div className="h-1 bg-stone-800 w-full">
-                        <div className="h-full bg-amber-400 animate-[shrink_7s_linear_forwards]"></div>
+                        <div className="h-full bg-orange-500 animate-[shrink_7s_linear_forwards]"></div>
                     </div>
                 </div>
             )}
@@ -247,7 +247,10 @@ export default function Vault() {
             {confirmDelete.isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-[6px] transition-all duration-300">
                     <div className="bg-[#EAE0C8] border border-stone-300 rounded-2xl p-6 md:p-8 w-full max-w-md shadow-2xl relative text-center animate-in fade-in zoom-in duration-300">
-                        <div className="mb-6">
+                        <div className="mb-6 flex flex-col items-center">
+                            <div className="w-16 h-16 rounded-full bg-red-100/50 border border-red-200 flex items-center justify-center mb-4">
+                                <svg className="w-8 h-8 text-red-600 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </div>
                             <h2 className="text-2xl font-extrabold text-stone-900 mb-2">Confirm Deletion</h2>
                             <p className="text-stone-600 font-medium text-sm md:text-base">
                                 {confirmDelete.type === 'single' && "Are you sure you want to delete this link?"}

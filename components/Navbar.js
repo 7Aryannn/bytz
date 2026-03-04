@@ -6,7 +6,20 @@ const Navbar = () => {
   return (
     <nav className="h-[80px] w-full bg-[#2D4F1E] border-b border-[#1A3011] flex items-center justify-between px-6 lg:px-10 shrink-0">
       <div className="flex items-center">
-        <Link href="/" className="text-3xl font-extrabold tracking-widest text-[#F5E6CC] hover:text-[#EAE0C8] transition-colors cursor-pointer">
+        <Link href="/" className="text-3xl font-extrabold tracking-widest text-[#F5E6CC] hover:text-[#EAE0C8] transition-colors cursor-pointer flex items-center gap-2 group">
+          <span
+            className="w-8 h-8 bg-current inline-block transform -translate-y-[1px]"
+            style={{
+              WebkitMaskImage: `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>")`,
+              WebkitMaskSize: "contain",
+              WebkitMaskRepeat: "no-repeat",
+              WebkitMaskPosition: "center",
+              maskImage: `url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>")`,
+              maskSize: "contain",
+              maskRepeat: "no-repeat",
+              maskPosition: "center"
+            }}
+          ></span>
           BYTZ
         </Link>
       </div>
