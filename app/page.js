@@ -170,18 +170,35 @@ export default function Home() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-[6px] transition-all duration-300"
           onClick={(e) => { if (e.target === e.currentTarget) setGeneratedLink(null); }}
         >
-          <div className="relative w-full max-w-lg p-1 rounded-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-            {/* Animated Border Tracker Background */}
-            <div className="absolute inset-0 z-0 bg-[conic-gradient(from_var(--border-angle),#F59E0B_0%,#F59E0B_5%,transparent_5%,transparent_100%)] animate-border-spin rounded-2xl"></div>
+          <div className="relative w-full max-w-lg bg-[#EAE0C8] border-2 border-stone-300 rounded-2xl p-6 md:p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] text-center animate-in fade-in zoom-in duration-300 overflow-hidden">
 
-            {/* Modal Content Foreground */}
-            <div className="bg-[#EAE0C8] border-stone-300 rounded-xl p-6 md:p-8 w-full shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] relative z-10 text-center">
+            {/* Animated SVG Border Overlay */}
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none z-20"
+              preserveAspectRatio="none"
+            >
+              <rect
+                x="0" y="0"
+                width="100%" height="100%"
+                rx="16"
+                fill="none"
+                stroke="#F59E0B"
+                strokeWidth="8"
+                strokeDasharray="100"
+                strokeDashoffset="0"
+                pathLength="100"
+                className="animate-[border-draw_10s_linear_forwards]"
+              />
+            </svg>
+
+            {/* Modal Content */}
+            <div className="relative z-10">
               <div className="mb-6">
                 <h2 className="text-2xl font-extrabold text-stone-900 mb-2">Your BYTZ Link is Ready</h2>
                 <p className="text-sm text-stone-500">Your shortened URL has been successfully forged.</p>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#FBF6EC] p-3 rounded-xl shadow-inner mb-8">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#FBF6EC] p-3 rounded-xl shadow-inner mb-8 border border-stone-300">
                 <p className="text-xl font-bold text-[#2D4F1E] truncate px-3">{generatedLink}</p>
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <button
@@ -216,7 +233,7 @@ export default function Home() {
                 <p className="text-sm text-stone-500 font-medium">Closing in {countdown}s...</p>
                 <button
                   onClick={() => setGeneratedLink(null)}
-                  className="text-sm text-stone-500 hover:text-stone-800 font-bold transition-colors"
+                  className="text-sm text-stone-500 hover:text-stone-800 font-bold transition-colors z-30 relative"
                 >
                   Close
                 </button>

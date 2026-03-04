@@ -1,14 +1,10 @@
 @import "tailwindcss";
 
-@property --border-angle {
-    syntax: "<angle>";
-    inherits: true;
-    initial-value: 0turn;
-}
+
 
 @theme {
     --animate-shrink-7s: shrink 7s linear forwards;
-    --animate-border-spin: border-spin 10s linear forwards;
+    --animate-border-draw: border-draw 10s linear forwards;
 }
 
 @keyframes shrink {
@@ -21,8 +17,12 @@
     }
 }
 
-@keyframes border-spin {
+@keyframes border-draw {
+    from {
+        stroke-dashoffset: 0;
+    }
+
     to {
-        --border-angle: 1turn;
+        stroke-dashoffset: -100;
     }
 }
