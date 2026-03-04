@@ -13,7 +13,10 @@ export default function Vault() {
     const [isDesktop, setIsDesktop] = useState(false);
 
     useEffect(() => {
-        setIsDesktop(window.innerWidth > 768);
+        const checkDesktop = () => setIsDesktop(window.innerWidth > 768);
+        checkDesktop(); // Check initially
+        window.addEventListener('resize', checkDesktop);
+        return () => window.removeEventListener('resize', checkDesktop);
     }, []);
 
     useEffect(() => {
@@ -166,7 +169,7 @@ export default function Vault() {
                         </div>
                     ) : (
                         <>
-                            {someSelected && isDesktop && (
+                            {(selectedIds.length > 0) && isDesktop && (
                                 <div className="text-center md:text-left text-xs font-semibold text-stone-500 mb-1 px-2 animate-in fade-in slide-in-from-top-1">
                                     Tip: Press <kbd className="font-mono bg-[#EAE0C8] border border-stone-300 px-1.5 py-0.5 rounded text-stone-600 mx-1 shadow-sm">Ctrl + A</kbd> to select all links
                                 </div>
