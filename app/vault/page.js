@@ -13,23 +13,11 @@ export default function Vault() {
     const [isDesktop, setIsDesktop] = useState(false);
 
     useEffect(() => {
-        const checkDesktop = () => setIsDesktop(window.innerWidth > 768);
-        checkDesktop(); // Check initially
-        window.addEventListener('resize', checkDesktop);
-        return () => window.removeEventListener('resize', checkDesktop);
+        setIsDesktop(window.innerWidth > 768);
+        const handleResize = () => setIsDesktop(window.innerWidth > 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
-
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.ctrlKey && e.key === 'a' && history.length > 0) {
-                e.preventDefault();
-                setSelectedIds(history.map(item => item.id));
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [history]);
 
     useEffect(() => {
         try {
@@ -66,6 +54,19 @@ export default function Vault() {
 
     const allSelected = history.length > 0 && selectedIds.length === history.length;
     const someSelected = selectedIds.length > 0 && !allSelected;
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+                e.preventDefault();
+                if (history.length > 0) {
+                    setSelectedIds(history.map(item => item.id));
+                }
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [history]);
 
     // Delete trigger logic
     const initiateDelete = (type, id = null) => {
@@ -137,7 +138,12 @@ export default function Vault() {
                         <p className="text-stone-600 mt-2 font-medium">Manage and track your shortened URLs</p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
+                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0 relative">
+                        {isDesktop && someSelected && (
+                            <div className="absolute -top-10 right-0 text-xs font-semibold text-stone-500 bg-[#EAE0C8] px-3 py-1.5 rounded-lg border border-stone-300 shadow-sm whitespace-nowrap animate-in fade-in slide-in-from-bottom-1 hidden sm:block z-20">
+                                Tip: Press <kbd className="font-sans bg-[#FBF6EC] border border-stone-300 rounded px-1.5 py-0.5 text-stone-700 mx-0.5 shadow-sm">Ctrl</kbd> + <kbd className="font-sans bg-[#FBF6EC] border border-stone-300 rounded px-1.5 py-0.5 text-stone-700 mx-0.5 shadow-sm">A</kbd> to select all links
+                            </div>
+                        )}
                         {someSelected && (
                             <button
                                 onClick={() => initiateDelete('selected')}
@@ -168,70 +174,63 @@ export default function Vault() {
                             <Link href="/" className="mt-4 text-amber-700 hover:text-amber-600 font-semibold underline">Generate your first BYTZ</Link>
                         </div>
                     ) : (
-                        <>
-                            {(selectedIds.length > 0) && isDesktop && (
-                                <div className="text-center md:text-left text-xs font-semibold text-stone-500 mb-1 px-2 animate-in fade-in slide-in-from-top-1">
-                                    Tip: Press <kbd className="font-mono bg-[#EAE0C8] border border-stone-300 px-1.5 py-0.5 rounded text-stone-600 mx-1 shadow-sm">Ctrl + A</kbd> to select all links
-                                </div>
-                            )}
-                            {history.map((item) => (
-                                <div
-                                    key={item.id}
-                                    className="bg-[#EAE0C8] border border-stone-300 hover:border-amber-400 rounded-2xl p-5 md:p-6 transition-all duration-300 group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-sm hover:shadow-md"
-                                >
-                                    <div className="flex items-center gap-4 flex-1 min-w-0 pr-4 w-full">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedIds.includes(item.id)}
-                                            onChange={() => handleSelect(item.id)}
-                                            className="w-5 h-5 rounded border border-stone-400 text-amber-700 focus:ring-amber-500 cursor-pointer accent-amber-600 shrink-0"
-                                        />
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <span className="text-xs font-bold text-amber-800 bg-[#FBF6EC] px-3 py-1 rounded-md border border-stone-300 whitespace-nowrap hidden sm:inline-block">
-                                                    {item.date}
-                                                </span>
-                                                <h3 className="text-xl font-bold text-stone-900 truncate tracking-tight">
-                                                    {item.shortUrl}
-                                                </h3>
-                                            </div>
-                                            <p className="text-sm text-stone-500 truncate w-full transition-colors">
-                                                {item.originalUrl}
-                                            </p>
+                        history.map((item) => (
+                            <div
+                                key={item.id}
+                                className="bg-[#EAE0C8] border border-stone-300 hover:border-amber-400 rounded-2xl p-5 md:p-6 transition-all duration-300 group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-sm hover:shadow-md"
+                            >
+                                <div className="flex items-center gap-4 flex-1 min-w-0 pr-4 w-full">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedIds.includes(item.id)}
+                                        onChange={() => handleSelect(item.id)}
+                                        className="w-5 h-5 rounded border border-stone-400 text-amber-700 focus:ring-amber-500 cursor-pointer accent-amber-600 shrink-0"
+                                    />
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <span className="text-xs font-bold text-amber-800 bg-[#FBF6EC] px-3 py-1 rounded-md border border-stone-300 whitespace-nowrap hidden sm:inline-block">
+                                                {item.date}
+                                            </span>
+                                            <h3 className="text-xl font-bold text-stone-900 truncate tracking-tight">
+                                                {item.shortUrl}
+                                            </h3>
                                         </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3 w-full sm:w-auto">
-                                        <button
-                                            onClick={() => initiateDelete('single', item.id)}
-                                            className="p-3 bg-red-900/5 text-red-600 hover:bg-red-900/10 border border-transparent hover:border-red-300 rounded-xl transition-colors shrink-0"
-                                            title="Delete Link"
-                                        >
-                                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                        </button>
-                                        <button
-                                            onClick={() => copyToClipboard(item.shortUrl, item.id)}
-                                            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all duration-300 border shadow-sm ${copiedId === item.id
-                                                ? 'bg-amber-600 text-[#F5E6CC] border-transparent'
-                                                : 'bg-[#FBF6EC] text-stone-700 border-stone-300 hover:border-amber-500 hover:text-amber-700'
-                                                }`}
-                                        >
-                                            {copiedId === item.id ? (
-                                                <>
-                                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                                                    Copied!
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                                                    Copy Link
-                                                </>
-                                            )}
-                                        </button>
+                                        <p className="text-sm text-stone-500 truncate w-full transition-colors">
+                                            {item.originalUrl}
+                                        </p>
                                     </div>
                                 </div>
-                            ))}
-                        </>
+
+                                <div className="flex items-center gap-3 w-full sm:w-auto">
+                                    <button
+                                        onClick={() => initiateDelete('single', item.id)}
+                                        className="p-3 bg-red-900/5 text-red-600 hover:bg-red-900/10 border border-transparent hover:border-red-300 rounded-xl transition-colors shrink-0"
+                                        title="Delete Link"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => copyToClipboard(item.shortUrl, item.id)}
+                                        className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all duration-300 border shadow-sm ${copiedId === item.id
+                                            ? 'bg-amber-600 text-[#F5E6CC] border-transparent'
+                                            : 'bg-[#FBF6EC] text-stone-700 border-stone-300 hover:border-amber-500 hover:text-amber-700'
+                                            }`}
+                                    >
+                                        {copiedId === item.id ? (
+                                            <>
+                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                                Copied!
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                                                Copy Link
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        ))
                     )}
                 </div>
             </div>
@@ -250,63 +249,59 @@ export default function Vault() {
             )}
 
             {/* Undo Toast */}
-            {
-                undoToast && (
-                    <div className="fixed bottom-6 left-6 md:left-auto md:right-6 bg-stone-900 text-[#F5E6CC] rounded-xl shadow-2xl z-50 transition-all duration-300 overflow-hidden min-w-[300px] animate-in slide-in-from-bottom-5">
-                        <div className="px-6 py-4 flex items-center justify-between gap-6">
-                            <div className="flex items-center gap-3">
-                                <svg className="w-5 h-5 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                <span className="font-bold text-sm tracking-wide">Links deleted</span>
-                            </div>
-                            <button
-                                onClick={executeUndo}
-                                className="text-orange-500 hover:text-orange-400 font-bold uppercase tracking-wider text-xs px-3 py-1.5 rounded bg-orange-500/10 hover:bg-orange-500/20 transition-colors"
-                            >
-                                Undo
-                            </button>
+            {undoToast && (
+                <div className="fixed bottom-6 left-6 md:left-auto md:right-6 bg-stone-900 text-[#F5E6CC] rounded-xl shadow-2xl z-50 transition-all duration-300 overflow-hidden min-w-[300px] animate-in slide-in-from-bottom-5">
+                    <div className="px-6 py-4 flex items-center justify-between gap-6">
+                        <div className="flex items-center gap-3">
+                            <svg className="w-5 h-5 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            <span className="font-bold text-sm tracking-wide">Links deleted</span>
                         </div>
-                        <div className="h-1 bg-stone-800 w-full">
-                            <div className="h-full bg-orange-500 animate-[shrink_7s_linear_forwards]"></div>
-                        </div>
+                        <button
+                            onClick={executeUndo}
+                            className="text-orange-500 hover:text-orange-400 font-bold uppercase tracking-wider text-xs px-3 py-1.5 rounded bg-orange-500/10 hover:bg-orange-500/20 transition-colors"
+                        >
+                            Undo
+                        </button>
                     </div>
-                )
-            }
+                    <div className="h-1 bg-stone-800 w-full">
+                        <div className="h-full bg-orange-500 animate-[shrink_7s_linear_forwards]"></div>
+                    </div>
+                </div>
+            )}
 
             {/* Confirm Delete Modal */}
-            {
-                confirmDelete.isOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-[6px] transition-all duration-300">
-                        <div className="bg-[#EAE0C8] border border-stone-300 rounded-2xl p-5 md:p-8 w-full max-w-md shadow-2xl relative text-center animate-in fade-in zoom-in duration-300 max-h-full overflow-y-auto flex flex-col no-scrollbar outline-none">
-                            <div className="mb-6 flex flex-col items-center">
-                                <div className="w-16 h-16 rounded-full bg-red-100/50 border border-red-200 flex items-center justify-center mb-4">
-                                    <svg className="w-8 h-8 text-red-600 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                </div>
-                                <h2 className="text-2xl font-extrabold text-stone-900 mb-2">Confirm Deletion</h2>
-                                <p className="text-stone-600 font-medium text-sm md:text-base">
-                                    {confirmDelete.type === 'single' && "Are you sure you want to delete this link?"}
-                                    {confirmDelete.type === 'selected' && "Are you sure you want to delete these selected links?"}
-                                    {confirmDelete.type === 'all' && "Are you sure you want to delete all saved links?"}
-                                </p>
+            {confirmDelete.isOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-[6px] transition-all duration-300">
+                    <div className="bg-[#EAE0C8] border border-stone-300 rounded-2xl p-6 md:p-8 w-full max-w-md shadow-2xl relative text-center animate-in fade-in zoom-in duration-300">
+                        <div className="mb-6 flex flex-col items-center">
+                            <div className="w-16 h-16 rounded-full bg-red-100/50 border border-red-200 flex items-center justify-center mb-4">
+                                <svg className="w-8 h-8 text-red-600 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <button
-                                    onClick={cancelDelete}
-                                    className="flex-1 px-5 py-3 rounded-xl font-bold transition-all duration-300 bg-[#FBF6EC] text-stone-700 border border-stone-300 hover:border-[#2D4F1E] hover:text-[#2D4F1E]"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={executeDelete}
-                                    className="flex-1 px-5 py-3 rounded-xl font-bold transition-all duration-300 bg-red-600 text-white hover:bg-red-700 shadow-sm"
-                                >
-                                    Delete
-                                </button>
-                            </div>
+                            <h2 className="text-2xl font-extrabold text-stone-900 mb-2">Confirm Deletion</h2>
+                            <p className="text-stone-600 font-medium text-sm md:text-base">
+                                {confirmDelete.type === 'single' && "Are you sure you want to delete this link?"}
+                                {confirmDelete.type === 'selected' && "Are you sure you want to delete these selected links?"}
+                                {confirmDelete.type === 'all' && "Are you sure you want to delete all saved links?"}
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={cancelDelete}
+                                className="flex-1 px-5 py-3 rounded-xl font-bold transition-all duration-300 bg-[#FBF6EC] text-stone-700 border border-stone-300 hover:border-[#2D4F1E] hover:text-[#2D4F1E]"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={executeDelete}
+                                className="flex-1 px-5 py-3 rounded-xl font-bold transition-all duration-300 bg-red-600 text-white hover:bg-red-700 shadow-sm"
+                            >
+                                Delete
+                            </button>
                         </div>
                     </div>
-                )
-            }
+                </div>
+            )}
 
-        </main >
+        </main>
     );
 }

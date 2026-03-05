@@ -134,7 +134,7 @@ export default function Home() {
                   value={alias}
                   onChange={(e) => setAlias(e.target.value)}
                   placeholder="custom-link"
-                  className="flex-1 min-w-0 bg-[#FBF6EC] text-stone-900 px-4 py-3 outline-none transition-all placeholder:text-stone-400"
+                  className="flex-1 bg-[#FBF6EC] text-stone-900 px-4 py-3 outline-none transition-all placeholder:text-stone-400"
                 />
               </div>
             </div>
@@ -170,7 +170,7 @@ export default function Home() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-[6px] transition-all duration-300"
           onClick={(e) => { if (e.target === e.currentTarget) setGeneratedLink(null); }}
         >
-          <div className="relative w-full max-w-lg bg-[#EAE0C8] border-2 border-stone-300 rounded-2xl p-5 md:p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] text-center animate-in fade-in zoom-in duration-300 overflow-hidden max-h-full flex flex-col">
+          <div className="relative w-full max-w-lg bg-[#EAE0C8] border-2 border-stone-300 rounded-2xl p-6 md:p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] text-center animate-in fade-in zoom-in duration-300 overflow-hidden">
 
             {/* Animated SVG Border Overlay */}
             <svg
@@ -192,14 +192,14 @@ export default function Home() {
             </svg>
 
             {/* Modal Content */}
-            <div className="relative z-10 overflow-y-auto outline-none no-scrollbar flex-1">
+            <div className="relative z-10">
               <div className="mb-6">
                 <h2 className="text-2xl font-extrabold text-stone-900 mb-2">Your BYTZ Link is Ready</h2>
                 <p className="text-sm text-stone-500">Your shortened URL has been successfully forged.</p>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#FBF6EC] p-3 rounded-xl shadow-inner mb-8 border border-stone-300 w-full">
-                <p className="text-lg sm:text-xl font-bold text-[#2D4F1E] truncate px-1 sm:px-3 w-full text-center sm:text-left min-w-0">{generatedLink}</p>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#FBF6EC] p-3 rounded-xl shadow-inner mb-8 border border-stone-300">
+                <p className="text-xl font-bold text-[#2D4F1E] truncate px-3">{generatedLink}</p>
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => copyToClipboard(generatedLink)}
