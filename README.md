@@ -100,8 +100,6 @@ bytz/
 
 ---
 
-### `app/dashboard/page.js` — Dashboard *(UI Prototype)*
-> ⚠️ This is a **frontend-only prototype** with hardcoded mock data. Not yet wired to a backend.
 
 **Features:**
 - Usage meter, create new link form, links table
@@ -144,12 +142,6 @@ Links are persisted in **MongoDB** (`bytz` database, `url` collection):
 git clone https://github.com/7Aryannn/bytz-url.git
 cd bytz-url
 npm install
-```
-
-Create a `.env.local` file in the root:
-```env
-MONGODB_URI=mongodb://localhost:27017
-NEXT_PUBLIC_HOST=http://localhost:3000
 ```
 
 Then run:
