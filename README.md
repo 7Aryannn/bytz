@@ -1,6 +1,6 @@
 # 🌿 BYTZ | Fast & Secure URL Shortener
 
-> **Minimalist URLs. Maximum Velocity.**
+> **Link With Elegance.**
 > Forge short, powerful BYTZ URLs instantly in a clean, minimalist space.
 
 🔗 **Live Demo:** [bytz-url.vercel.app](https://bytz-url.vercel.app)
@@ -8,18 +8,26 @@
 ---
 
 ## 📁 Project Structure
-
 ```
 bytz/
 ├── app/
-│   ├── layout.js           # Root layout with Navbar + Geist fonts
-│   ├── page.js             # Home — URL shortener form
+│   ├── layout.js               # Root layout with Navbar + Geist fonts
+│   ├── page.js                 # Home — URL shortener form
+│   ├── [shorturl]/
+│   │   └── page.js             # Dynamic redirect — queries MongoDB and redirects
+│   ├── api/
+│   │   ├── generate/
+│   │   │   └── route.js        # POST — saves new short URL to MongoDB
+│   │   └── urls/
+│   │       └── route.js        # GET — fetches all URLs from MongoDB
 │   ├── vault/
-│   │   └── page.js         # Vault — link history manager
+│   │   └── page.js             # Vault — link history fetched from MongoDB
 │   └── dashboard/
-│       └── page.js         # Dashboard — analytics overview (UI prototype)
+│       └── page.js             # Dashboard — analytics overview (UI prototype)
+├── lib/
+│   └── mongodb.js              # MongoDB client singleton
 └── components/
-    └── Navbar.js           # Top navigation bar
+    └── Navbar.js               # Top navigation bar
 ```
 
 ---
@@ -57,51 +65,48 @@ bytz/
 **Key Features:**
 - URL shortening form with optional custom alias (`bytz.io/<alias>`)
 - Auto-generates random 6-char alias if none provided
-- Saves links to `localStorage` under key `bytz_links`
+- POSTs to `/api/generate` to save link in MongoDB
+- Uses `NEXT_PUBLIC_HOST` env var to construct the full short URL
 - **Result Modal** with animated SVG border countdown timer, Copy + Open buttons, auto-dismisses in 10s or on `Escape`
 - **Toast notification** with animated progress bar (7s)
 - Link to Vault for history
 
 ---
 
-### `app/vault/page.js` — Vault
-**State:**
-| State | Purpose |
-|---|---|
-| `history` | Links loaded from `localStorage` |
-| `selectedIds` | Multi-select checkbox state |
-| `copiedId` | Per-item copy feedback |
-| `toastMessage` | Copy toast |
-| `undoToast` | Undo delete toast with restore logic |
-| `confirmDelete` | Delete confirmation modal state |
-| `isDesktop` | Responsive keyboard hint toggle |
+### `app/[shorturl]/page.js` — Redirect Handler
+- Server component that reads the `shorturl` param
+- Queries MongoDB for a matching document
+- Redirects to the original URL if found, otherwise redirects to `/`
 
+---
+
+### `app/api/generate/route.js` — Generate API
+- `POST` — accepts `{ url, shorturl }` in the request body
+- Checks for duplicate alias in MongoDB
+- Inserts new document if alias is available
+- Returns `{ success, message }`
+
+### `app/api/urls/route.js` — URLs API
+- `GET` — fetches all URL documents from MongoDB sorted by newest first
+- Returns `{ success, data }`
+
+---
+
+### `app/vault/page.js` — Vault
 **Key Features:**
-- Loads all saved links from `localStorage` on mount
-- **Checkbox multi-select** with `Ctrl/Cmd + A` to select all
-- **Delete flows:** single, selected, or all — with confirmation modal
-- **Undo delete** — restores deleted links within 7s via undo toast
-- Per-item Copy Link button with feedback state
+- Fetches all saved links from `/api/generate` on mount
+- Displays short URL and original URL for each entry
 - Empty state with link back to generator
-- Two toast types: copy (green) and undo-delete (dark)
 
 ---
 
 ### `app/dashboard/page.js` — Dashboard *(UI Prototype)*
 > ⚠️ This is a **frontend-only prototype** with hardcoded mock data. Not yet wired to a backend.
 
-**Theme:** Dark indigo + fuchsia/orange gradient — analytics-focused UI
-
 **Features:**
-- Usage meter (`links created / 100` limit)
-- Create new link form with alias validation (alphanumeric, hyphens, underscores only)
-- Links table with short URL, original URL, date, click count, edit & delete actions
-- **Analytics sidebar** (sticky) — shows for selected link:
-  - Total clicks
-  - Top countries with percentage bars (orange)
-  - Device type breakdown with percentage bars (fuchsia)
-- Edit modal — update destination URL for an existing short link
-- Delete modal — confirm before removing a link
+- Usage meter, create new link form, links table
+- Analytics sidebar with clicks, countries, device breakdown
+- Edit and delete modals
 
 ---
 
@@ -123,29 +128,32 @@ bytz/
 
 ## 💾 Data Storage
 
-Links are persisted in `localStorage` under the key `bytz_links` as a JSON array:
-
+Links are persisted in **MongoDB** (`bytz` database, `url` collection):
 ```json
-[
-  {
-    "id": "abc123",
-    "originalUrl": "https://example.com/long/path",
-    "shortUrl": "bytz.io/myalias",
-    "date": "Mar 5, 2026"
-  }
-]
+{
+  "_id": "ObjectId(...)",
+  "url": "https://example.com/long/path",
+  "shorturl": "myalias"
+}
 ```
-
-> ⚠️ Currently client-side only. No backend/database integration yet.
 
 ---
 
 ## 🚀 Getting Started
-
 ```bash
 git clone https://github.com/7Aryannn/bytz-url.git
 cd bytz-url
 npm install
+```
+
+Create a `.env.local` file in the root:
+```env
+MONGODB_URI=mongodb://localhost:27017
+NEXT_PUBLIC_HOST=http://localhost:3000
+```
+
+Then run:
+```bash
 npm run dev
 ```
 
@@ -155,8 +163,8 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ## 🔮 Planned / TODO
 
-- [ ] Backend API for actual URL redirection
 - [ ] Auth (Login / Sign Up — stubs already in Navbar)
 - [ ] Real analytics (clicks, countries, devices)
 - [ ] Dashboard wired to live data
 - [ ] Rate limiting & alias collision handling
+- [ ] Deploy with MongoDB Atlas for production database
