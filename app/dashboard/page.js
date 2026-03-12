@@ -3,44 +3,8 @@
 import React, { useState } from 'react';
 
 export default function Dashboard() {
-    const [links, setLinks] = useState([
-        {
-            id: '1',
-            originalUrl: 'https://verylongurl.com/a/b/c/d/e/f/g',
-            shortUrl: 'bytz.io/my-link',
-            alias: 'my-link',
-            date: 'Oct 24, 2026',
-            clicks: 1245,
-            countries: [
-                { name: 'US', count: 850, percentage: 68 },
-                { name: 'IN', count: 245, percentage: 20 },
-                { name: 'UK', count: 150, percentage: 12 },
-            ],
-            devices: [
-                { name: 'Mobile', percentage: 75 },
-                { name: 'Desktop', percentage: 20 },
-                { name: 'Tablet', percentage: 5 },
-            ]
-        },
-        {
-            id: '2',
-            originalUrl: 'https://example.com/product/xyz/promo/summer26',
-            shortUrl: 'bytz.io/xyz123',
-            alias: 'xyz123',
-            date: 'Oct 23, 2026',
-            clicks: 340,
-            countries: [
-                { name: 'US', count: 200, percentage: 58 },
-                { name: 'UK', count: 100, percentage: 29 },
-                { name: 'CA', count: 40, percentage: 13 },
-            ],
-            devices: [
-                { name: 'Desktop', percentage: 60 },
-                { name: 'Mobile', percentage: 40 },
-                { name: 'Tablet', percentage: 0 },
-            ]
-        }
-    ]);
+    const [links, setLinks] = useState([]);
+    const [selectedLink, setSelectedLink] = useState(null);
 
     const usageCount = links.length;
     const usageLimit = 100;
@@ -50,14 +14,40 @@ export default function Dashboard() {
     const [aliasError, setAliasError] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
 
-    const [selectedLink, setSelectedLink] = useState(links[0]);
-
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editUrl, setEditUrl] = useState('');
     const [linkToEdit, setLinkToEdit] = useState(null);
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [linkToDelete, setLinkToDelete] = useState(null);
+
+    React.useEffect(() => {
+        const fetchLinks = async () => {
+            try {
+                const res = await fetch('/api/urls');
+                const result = await res.json();
+                if (result.success) {
+                    const formattedLinks = result.data.map(item => ({
+                        id: item._id,
+                        originalUrl: item.url,
+                        shortUrl: `bytz.io/${item.shorturl}`,
+                        alias: item.shorturl,
+                        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                        clicks: 0,
+                        countries: [],
+                        devices: []
+                    }));
+                    setLinks(formattedLinks);
+                    if (formattedLinks.length > 0) {
+                        setSelectedLink(formattedLinks[0]);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch links:', error);
+            }
+        };
+        fetchLinks();
+    }, []);
 
     const handleAliasChange = (e) => {
         const val = e.target.value;
@@ -69,30 +59,58 @@ export default function Dashboard() {
         }
     };
 
-    const handleGenerate = (e) => {
+    const handleGenerate = async (e) => {
         e.preventDefault();
         if (!longUrl || aliasError) return;
         setIsGenerating(true);
 
-        setTimeout(() => {
-            const finalAlias = alias || Math.random().toString(36).substring(2, 8);
-            const newLink = {
-                id: Math.random().toString(),
-                originalUrl: longUrl,
-                shortUrl: `bytz.io/${finalAlias}`,
-                alias: finalAlias,
-                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                clicks: 0,
-                countries: [],
-                devices: []
-            };
-            const updatedList = [newLink, ...links];
-            setLinks(updatedList);
-            setSelectedLink(newLink);
-            setLongUrl('');
-            setAlias('');
+        const finalAlias = alias || Math.random().toString(36).substring(2, 8);
+
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        const raw = JSON.stringify({
+            url: longUrl,
+            shorturl: finalAlias
+        });
+
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow"
+        };
+
+        try {
+            const response = await fetch("/api/generate", requestOptions);
+            const result = await response.json();
+
+            if (result.success) {
+                const newLink = {
+                    id: Math.random().toString(),
+                    originalUrl: longUrl,
+                    shortUrl: `bytz.io/${finalAlias}`,
+                    alias: finalAlias,
+                    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                    clicks: 0,
+                    countries: [],
+                    devices: []
+                };
+                const updatedList = [newLink, ...links];
+                setLinks(updatedList);
+                setSelectedLink(newLink);
+                setLongUrl('');
+                setAlias('');
+                setAliasError('');
+            } else {
+                setAliasError(result.message || 'Failed to generate URL');
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            setAliasError('An error occurred while connecting to the server');
+        } finally {
             setIsGenerating(false);
-        }, 800);
+        }
     };
 
     const openEditModal = (link) => {

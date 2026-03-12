@@ -1,0 +1,1 @@
+const fs = require('fs'); const txt = fs.readFileSync('app/page.js', 'utf8'); console.log('(', txt.match(/\(/g)?.length, ')', txt.match(/\)/g)?.length, '{', txt.match(/\{/g)?.length, '}', txt.match(/\}/g)?.length, '[', txt.match(/\[/g)?.length, ']', txt.match(/\]/g)?.length);

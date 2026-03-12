@@ -10,6 +10,11 @@ export default function Home() {
   const [isCopiedGen, setIsCopiedGen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [countdown, setCountdown] = useState(10);
+  const [hostUrl, setHostUrl] = useState('');
+
+  useEffect(() => {
+    setHostUrl(process.env.NEXT_PUBLIC_HOST || window.location.origin);
+  }, []);
 
   useEffect(() => {
     let interval;
@@ -44,37 +49,50 @@ export default function Home() {
     setTimeout(() => setToastMessage(''), 7000);
   };
 
-  const handleGenerate = (e) => {
+  const handleGenerate = async (e) => {
     e.preventDefault();
     if (!longUrl) return;
     setIsGenerating(true);
     setGeneratedLink(null);
     setIsCopiedGen(false);
 
-    setTimeout(() => {
-      const finalAlias = alias || Math.random().toString(36).substring(2, 8);
-      const newShortLink = `bytz.io/${finalAlias}`;
+    const finalAlias = alias || Math.random().toString(36).substring(2, 8);
 
-      const newHistoryItem = {
-        id: Math.random().toString(36).substring(2, 9),
-        originalUrl: longUrl,
-        shortUrl: newShortLink,
-        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-      };
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
 
-      try {
-        const existingStr = localStorage.getItem('bytz_links');
-        const existingLinks = existingStr ? JSON.parse(existingStr) : [];
-        localStorage.setItem('bytz_links', JSON.stringify([newHistoryItem, ...existingLinks]));
-      } catch (err) {
-        console.error('Failed to save to localStorage', err);
+    const raw = JSON.stringify({
+      url: longUrl,
+      shorturl: finalAlias
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow"
+    };
+
+    try {
+      const response = await fetch("/api/generate", requestOptions);
+      const result = await response.json();
+
+      if (result.success) {
+        const currentHost = process.env.NEXT_PUBLIC_HOST || window.location.origin;
+        const newShortLink = `${currentHost}/${finalAlias}`;
+        setGeneratedLink(newShortLink);
+        setLongUrl('');
+        setAlias('');
+        showToast(result.message);
+      } else {
+        showToast(result.message || 'Failed to generate URL');
       }
-
-      setGeneratedLink(newShortLink);
-      setLongUrl('');
-      setAlias('');
+    } catch (error) {
+      console.error('Fetch error:', error);
+      showToast('An error occurred during generation');
+    } finally {
       setIsGenerating(false);
-    }, 800);
+    }
   };
 
   const copyToClipboard = async (text) => {
@@ -87,6 +105,7 @@ export default function Home() {
       console.error('Failed to copy', err);
     }
   };
+
 
   return (
     <main className="h-[calc(100vh-80px)] w-full bg-[#F5E6CC] flex flex-col items-center justify-center p-4 md:p-6 text-stone-900 overflow-hidden font-sans relative">
@@ -127,7 +146,7 @@ export default function Home() {
               </label>
               <div className="flex shadow-inner rounded-xl overflow-hidden focus-within:ring-1 focus-within:ring-[#2D4F1E] transition-all border border-stone-300">
                 <span className="flex items-center px-4 bg-[#EAE0C8] border-r border-stone-300 text-stone-700 font-medium">
-                  bytz.io/
+                  {hostUrl ? `${hostUrl}/` : 'bytz.io/'}
                 </span>
                 <input
                   type="text"
@@ -172,7 +191,6 @@ export default function Home() {
         >
           <div className="relative w-full max-w-lg bg-[#EAE0C8] border-2 border-stone-300 rounded-2xl p-6 md:p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] text-center animate-in fade-in zoom-in duration-300 overflow-hidden">
 
-            {/* Animated SVG Border Overlay */}
             <svg
               className="absolute inset-0 w-full h-full pointer-events-none z-20"
               preserveAspectRatio="none"
@@ -191,19 +209,20 @@ export default function Home() {
               />
             </svg>
 
-            {/* Modal Content */}
             <div className="relative z-10">
               <div className="mb-6">
                 <h2 className="text-2xl font-extrabold text-stone-900 mb-2">Your BYTZ Link is Ready</h2>
                 <p className="text-sm text-stone-500">Your shortened URL has been successfully forged.</p>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#FBF6EC] p-3 rounded-xl shadow-inner mb-8 border border-stone-300">
-                <p className="text-xl font-bold text-[#2D4F1E] truncate px-3">{generatedLink}</p>
-                <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="flex flex-col gap-3 mb-8">
+                <div className="bg-[#FBF6EC] p-3 rounded-xl shadow-inner border border-stone-300 w-full overflow-hidden text-center">
+                  <p className="text-xl font-bold text-[#2D4F1E] truncate px-3">{generatedLink}</p>
+                </div>
+                <div className="flex items-center gap-3 w-full">
                   <button
                     onClick={() => copyToClipboard(generatedLink)}
-                    className={`flex-1 sm:flex-none px-5 py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-all duration-300 shadow-sm text-sm ${isCopiedGen ? 'bg-[#2D4F1E] text-[#F5E6CC] border-transparent' : 'bg-[#EAE0C8] text-stone-800 border-2 border-transparent hover:border-[#2D4F1E] hover:text-[#2D4F1E]'}`}
+                    className={`flex-1 px-5 py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-all duration-300 shadow-sm text-sm ${isCopiedGen ? 'bg-[#2D4F1E] text-[#F5E6CC] border border-[#1A3011]' : 'bg-[#EAE0C8] text-stone-800 border border-stone-300 hover:border-[#2D4F1E] hover:text-[#2D4F1E] hover:bg-[#F5E6CC]'}`}
                   >
                     {isCopiedGen ? (
                       <>
@@ -218,10 +237,10 @@ export default function Home() {
                     )}
                   </button>
                   <a
-                    href={`https://${generatedLink}`}
+                    href={generatedLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 sm:flex-none px-5 py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-all duration-300 shadow-sm text-sm bg-[#EAE0C8] text-stone-800 border-2 border-transparent hover:border-[#2D4F1E] hover:text-[#2D4F1E]"
+                    className="flex-1 px-5 py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-all duration-300 shadow-sm text-sm bg-[#2D4F1E] text-[#F5E6CC] border border-[#1A3011] hover:bg-[#1A3011] hover:shadow-md"
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                     Open

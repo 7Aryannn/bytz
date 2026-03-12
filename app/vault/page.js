@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Vault() {
@@ -11,6 +11,7 @@ export default function Vault() {
     const [undoToast, setUndoToast] = useState(null);
     const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, type: null, targetIds: [] });
     const [isDesktop, setIsDesktop] = useState(false);
+    const pendingDeletes = useRef(new Set());
 
     useEffect(() => {
         setIsDesktop(window.innerWidth > 768);
@@ -20,14 +21,43 @@ export default function Vault() {
     }, []);
 
     useEffect(() => {
-        try {
-            const existingStr = localStorage.getItem('bytz_links');
-            if (existingStr) {
-                setHistory(JSON.parse(existingStr));
+        const handleBeforeUnload = () => {
+            if (pendingDeletes.current.size > 0) {
+                const ids = Array.from(pendingDeletes.current);
+                fetch('/api/urls', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids }),
+                    keepalive: true
+                }).catch(() => {});
             }
-        } catch (err) {
-            console.error('Failed to load links from localStorage', err);
-        }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            handleBeforeUnload();
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
+
+    useEffect(() => {
+        const fetchLinks = async () => {
+            try {
+                const res = await fetch('/api/urls');
+                const result = await res.json();
+                if (result.success) {
+                    const mappedLinks = result.data.map(item => ({
+                        id: item._id,
+                        originalUrl: item.url,
+                        shortUrl: `bytz.io/${item.shorturl}`,
+                        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    }));
+                    setHistory(mappedLinks);
+                }
+            } catch (error) {
+                console.error('Failed to load links from db', error);
+            }
+        };
+        fetchLinks();
     }, []);
 
     // Copy logic
@@ -89,17 +119,26 @@ export default function Vault() {
         setSelectedIds(prev => prev.filter(id => !idsToDelete.includes(id)));
         setConfirmDelete({ isOpen: false, type: null, targetIds: [] });
 
-        try {
-            localStorage.setItem('bytz_links', JSON.stringify(newHistory));
-        } catch (err) {
-            console.error('Failed to update localStorage', err);
-        }
+        idsToDelete.forEach(id => pendingDeletes.current.add(id));
 
-        // Handle undo toast
         if (undoToast && undoToast.timeoutId) {
             clearTimeout(undoToast.timeoutId);
         }
-        const timeoutId = setTimeout(() => setUndoToast(null), 7000);
+        
+        const timeoutId = setTimeout(() => {
+            const toDeleteNow = idsToDelete.filter(id => pendingDeletes.current.has(id));
+            if (toDeleteNow.length > 0) {
+                fetch('/api/urls', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: toDeleteNow })
+                }).catch(err => console.error(err));
+                
+                toDeleteNow.forEach(id => pendingDeletes.current.delete(id));
+            }
+            setUndoToast(null);
+        }, 7000);
+
         setUndoToast({ items: deletedItems, timeoutId });
     };
 
@@ -110,12 +149,10 @@ export default function Vault() {
     const executeUndo = () => {
         if (!undoToast) return;
         const restoredHistory = [...undoToast.items, ...history];
+        
+        undoToast.items.forEach(item => pendingDeletes.current.delete(item.id));
+
         setHistory(restoredHistory);
-        try {
-            localStorage.setItem('bytz_links', JSON.stringify(restoredHistory));
-        } catch (err) {
-            console.error('Failed to restore localStorage', err);
-        }
         clearTimeout(undoToast.timeoutId);
         setUndoToast(null);
     };
