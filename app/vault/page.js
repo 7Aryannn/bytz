@@ -274,7 +274,7 @@ export default function Vault() {
 
             {/* Copy Toast */}
             {toastMessage && (
-                <div className="fixed bottom-6 right-6 bg-[#2D4F1E] text-[#F5E6CC] rounded-xl shadow-[0_10px_30px_rgba(45,79,30,0.5)] z-50 transition-all duration-300 overflow-hidden min-w-[300px] animate-in slide-in-from-bottom-5">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-6 w-[calc(100%-2rem)] sm:w-auto min-w-[300px] bg-[#2D4F1E] text-[#F5E6CC] rounded-xl shadow-[0_10px_30px_rgba(45,79,30,0.5)] z-50 transition-all duration-300 overflow-hidden animate-in slide-in-from-bottom-5">
                     <div className="px-6 py-4 flex items-center gap-3">
                         <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                         <span className="font-bold">{toastMessage}</span>
@@ -287,7 +287,7 @@ export default function Vault() {
 
             {/* Undo Toast */}
             {undoToast && (
-                <div className="fixed bottom-6 left-6 md:left-auto md:right-6 bg-stone-900 text-[#F5E6CC] rounded-xl shadow-2xl z-50 transition-all duration-300 overflow-hidden min-w-[300px] animate-in slide-in-from-bottom-5">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-6 w-[calc(100%-2rem)] sm:w-auto min-w-[300px] bg-stone-900 text-[#F5E6CC] rounded-xl shadow-2xl z-50 transition-all duration-300 overflow-hidden animate-in slide-in-from-bottom-5">
                     <div className="px-6 py-4 flex items-center justify-between gap-6">
                         <div className="flex items-center gap-3">
                             <svg className="w-5 h-5 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
