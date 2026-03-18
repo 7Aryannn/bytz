@@ -191,7 +191,7 @@ export default function Dashboard() {
                                 <div>
                                     <label className="block text-sm font-semibold text-indigo-300 mb-2">Custom Alias (Optional)</label>
                                     <div className="flex">
-                                        <span className="inline-flex items-center px-4 bg-indigo-800 border border-r-0 border-indigo-700 rounded-l-xl text-indigo-300 font-medium">
+                                        <span className="inline-flex items-center px-3 sm:px-4 bg-indigo-800 border border-r-0 border-indigo-700 rounded-l-xl text-indigo-300 font-medium whitespace-nowrap text-sm sm:text-base">
                                             bytz.io/
                                         </span>
                                         <input
@@ -367,7 +367,7 @@ export default function Dashboard() {
                                 />
                             </div>
                         </div>
-                        <div className="flex justify-end gap-3">
+                        <div className="flex flex-col sm:flex-row justify-end gap-3">
                             <button
                                 onClick={() => setIsEditModalOpen(false)}
                                 className="px-5 py-2.5 rounded-xl font-semibold text-indigo-300 hover:bg-indigo-800 transition-colors"

@@ -35,7 +35,7 @@ const Navbar = () => {
         </Link> */}
         <Link
           href="/vault"
-          className="px-5 py-2.5 rounded-xl font-bold bg-[#F5E6CC] text-[#2D4F1E] hover:bg-[#EAE0C8] shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+          className="px-4 sm:px-5 py-2.5 rounded-xl font-bold bg-[#F5E6CC] text-[#2D4F1E] hover:bg-[#EAE0C8] shadow-md hover:shadow-lg transition-all flex items-center gap-2"
         >
           <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
           <span className="hidden sm:inline">My Vault</span>

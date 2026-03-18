@@ -145,8 +145,8 @@ export default function Home() {
                 Custom Alias <span className="text-stone-500 font-normal normal-case">(Optional)</span>
               </label>
               <div className="flex shadow-inner rounded-xl overflow-hidden focus-within:ring-1 focus-within:ring-[#2D4F1E] transition-all border border-stone-300">
-                <span className="flex items-center px-4 bg-[#EAE0C8] border-r border-stone-300 text-stone-700 font-medium">
-                  {hostUrl ? `${hostUrl}/` : 'bytz.io/'}
+                <span className="flex items-center px-3 sm:px-4 bg-[#EAE0C8] border-r border-stone-300 text-stone-700 font-medium whitespace-nowrap text-sm sm:text-base">
+                  {hostUrl ? `${hostUrl.replace(/^https?:\/\//, '')}/` : 'bytz.io/'}
                 </span>
                 <input
                   type="text"
@@ -219,7 +219,7 @@ export default function Home() {
                 <div className="bg-[#FBF6EC] p-3 rounded-xl shadow-inner border border-stone-300 w-full overflow-hidden text-center">
                   <p className="text-xl font-bold text-[#2D4F1E] truncate px-3">{generatedLink}</p>
                 </div>
-                <div className="flex items-center gap-3 w-full">
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
                   <button
                     onClick={() => copyToClipboard(generatedLink)}
                     className={`flex-1 px-5 py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-all duration-300 shadow-sm text-sm ${isCopiedGen ? 'bg-[#2D4F1E] text-[#F5E6CC] border border-[#1A3011]' : 'bg-[#EAE0C8] text-stone-800 border border-stone-300 hover:border-[#2D4F1E] hover:text-[#2D4F1E] hover:bg-[#F5E6CC]'}`}
@@ -263,7 +263,7 @@ export default function Home() {
       )}
 
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 bg-[#2D4F1E] text-[#F5E6CC] rounded-xl shadow-[0_10px_30px_rgba(45,79,30,0.5)] z-50 transition-all duration-300 overflow-hidden min-w-[300px] animate-in slide-in-from-bottom-5">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-6 w-[calc(100%-2rem)] sm:w-auto min-w-[300px] bg-[#2D4F1E] text-[#F5E6CC] rounded-xl shadow-[0_10px_30px_rgba(45,79,30,0.5)] z-50 transition-all duration-300 overflow-hidden animate-in slide-in-from-bottom-5">
           <div className="px-6 py-4 flex items-center gap-3">
             <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
             <span className="font-bold">{toastMessage}</span>

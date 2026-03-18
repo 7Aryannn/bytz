@@ -321,7 +321,7 @@ export default function Vault() {
                                 {confirmDelete.type === 'all' && "Are you sure you want to delete all saved links?"}
                             </p>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
                             <button
                                 onClick={cancelDelete}
                                 className="flex-1 px-5 py-3 rounded-xl font-bold transition-all duration-300 bg-[#FBF6EC] text-stone-700 border border-stone-300 hover:border-[#2D4F1E] hover:text-[#2D4F1E]"
