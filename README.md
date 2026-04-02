@@ -7,7 +7,7 @@
 
 ---
 
-## 📁 Project Structure:
+## 📁 Project Structure
 ```
 bytz/
 ├── app/
