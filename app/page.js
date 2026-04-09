@@ -56,7 +56,7 @@ export default function Home() {
     setGeneratedLink(null);
     setIsCopiedGen(false);
 
-    const finalAlias = alias || Math.random().toString(36).substring(2, 8);
+    const finalAlias = (alias && alias.trim()) ? alias.trim().replace(/\s+/g, '-') : Math.random().toString(36).substring(2, 8);
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -108,7 +108,7 @@ export default function Home() {
 
 
   return (
-    <main className="h-[calc(100vh-80px)] w-full bg-[#F5E6CC] flex flex-col items-center justify-center p-4 md:p-6 text-stone-900 overflow-hidden font-sans relative">
+    <main className="min-h-[calc(100vh-80px)] w-full bg-[#F5E6CC] flex flex-col items-center justify-center p-4 md:p-6 text-stone-900 font-sans relative">
 
       <div className="w-full max-w-xl relative flex flex-col items-center space-y-6 md:space-y-8">
 
@@ -153,7 +153,7 @@ export default function Home() {
                   value={alias}
                   onChange={(e) => setAlias(e.target.value)}
                   placeholder="custom-link"
-                  className="flex-1 bg-[#FBF6EC] text-stone-900 px-4 py-3 outline-none transition-all placeholder:text-stone-400"
+                  className="flex-1 min-w-0 bg-[#FBF6EC] text-stone-900 px-4 py-3 outline-none transition-all placeholder:text-stone-400"
                 />
               </div>
             </div>
@@ -217,7 +217,7 @@ export default function Home() {
 
               <div className="flex flex-col gap-3 mb-8">
                 <div className="bg-[#FBF6EC] p-3 rounded-xl shadow-inner border border-stone-300 w-full overflow-hidden text-center">
-                  <p className="text-xl font-bold text-[#2D4F1E] truncate px-3">{generatedLink}</p>
+                  <p className="text-lg sm:text-xl font-bold text-[#2D4F1E] truncate px-3">{generatedLink}</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
                   <button
